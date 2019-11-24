@@ -46,7 +46,6 @@ class PresentationPage extends React.Component {
   constructor(props) {
     super(props);
     // Don't call this.setState() here!
-    console.log(localStorage.getItem("lang"))
     if (localStorage.getItem("lang")===null) {
       localStorage.setItem("lang", "en");
       this.state = {

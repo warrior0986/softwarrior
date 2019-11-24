@@ -23,6 +23,7 @@ import classNames from "classnames";
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
 import FormControl from "@material-ui/core/FormControl";
+import FormHelperText from '@material-ui/core/FormHelperText';
 import InputLabel from "@material-ui/core/InputLabel";
 import Input from "@material-ui/core/Input";
 // @material-ui/icons
@@ -43,7 +44,8 @@ function CustomInput({ ...props }) {
     error,
     white,
     inputRootCustomClasses,
-    success
+    success,
+    // errorText
   } = props;
 
   const labelClasses = classNames({
@@ -95,6 +97,7 @@ function CustomInput({ ...props }) {
       />
       {error ? (
         <Clear className={classes.feedback + " " + classes.labelRootError} />
+        // <FormHelperText id="component-error-text">{errorText}</FormHelperText>
       ) : success ? (
         <Check className={classes.feedback + " " + classes.labelRootSuccess} />
       ) : null}

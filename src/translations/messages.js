@@ -27,6 +27,9 @@ export default {
         "Portfolio.button.go" : "Go to demo",
         "ContactMe.warning.title" : "WARNING ALERT: ",
         "ContactMe.warning.message" : "This site is currently under construction, so mail delivery is not yet developed, however, you can send me an email to those described in the next section",
+        "FormSubmit.error" : "Sorry, there are some errors in the form.",
+        "FormSubmit.success" : "Your message was sent and I will respond as soon as possible",
+        "FormSubmit.success.title" : "Great"
     },
     es: {
         "Landing.presentation" : "Un Freelancer que hará tu vida mas fácil",
@@ -56,5 +59,8 @@ export default {
         "Portfolio.button.go" : "Ir a la página demo",
         "ContactMe.warning.title" : "Advertencia: ",
         "ContactMe.warning.message" : "actualmente este sitio se encuentra en construcción por lo cual aún no está desarrollado el envío de correo, sin embargo, puedes enviarme un email  a los que se describen en la próxima sección",
+        "FormSubmit.error" : "Lo sentimos, hay algunos errores en el formulario.",
+        "FormSubmit.success" : "Tu mensaje fue enviado y te responderé lo mas pronto posible",
+        "FormSubmit.success.title" : "Listo"
     }
 }

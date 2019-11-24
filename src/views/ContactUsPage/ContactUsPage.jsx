@@ -46,6 +46,9 @@ import SnackbarContent from "components/Snackbar/SnackbarContent.jsx";
 
 import contactUsStyle from "assets/jss/material-kit-pro-react/views/contactUsStyle.jsx";
 
+import messages from "translations/messages";
+import axios from 'axios';
+
 const CustomSkinMap = withScriptjs(
   withGoogleMap(() => (
     <GoogleMap
@@ -121,20 +124,123 @@ const CustomSkinMap = withScriptjs(
   ))
 );
 
-const injectGetMessage = (fn) => 
-  React.createElement(injectIntl(({ intl }) => fn(intl.formatMessage)));
-
 class ContactUsPage extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      fields: {},
+      errors: {
+        name: null,
+        email: null,
+        phone: null,
+        message: null
+      }
+    }
+  }
+
   componentDidMount() {
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
   }
 
-  getMessages(key) {
-    console.log(intl.injectGetMessage({id: key}));
+  handleSubmit(event) {
+    console.log("hola");
+    event.preventDefault();
+  }
+
+  handleValidation(allForm = false){
+    let fields = this.state.fields;
+    let errors = {};
+    let formIsValid = true;
+
+    //Name
+    if(!fields["name"] && allForm == true){
+       formIsValid = false;
+       errors["name"] = true;
+    }
+
+    if(typeof fields["name"] !== "undefined"){
+       if(!fields["name"].match(/^[a-zA-Z\s]*$/)){
+          formIsValid = false;
+          errors["name"] = true;
+       }        
+    }
+
+    //Phone
+    if(!fields["phone"] && allForm == true){
+      formIsValid = false;
+      errors["phone"] = true;
+   }
+
+   if(typeof fields["phone"] !== "undefined"){
+      if(!fields["phone"].match(/^[0-9]+$/)){
+         formIsValid = false;
+         errors["phone"] = true;
+      }        
+   }
+
+    //Email
+    if(!fields["email"] && allForm == true){
+       formIsValid = false;
+       errors["email"] = true;
+    }
+
+    if(typeof fields["email"] !== "undefined"){
+       let lastAtPos = fields["email"].lastIndexOf('@');
+       let lastDotPos = fields["email"].lastIndexOf('.');
+
+       if (!(lastAtPos < lastDotPos && lastAtPos > 0 && fields["email"].indexOf('@@') == -1 && lastDotPos > 2 && (fields["email"].length - lastDotPos) > 2)) {
+          formIsValid = false;
+          errors["email"] = true;
+        }
+   }  
+
+    this.setState({errors: errors});
+    return formIsValid;
+  }
+
+  contactSubmit(e){
+      e.preventDefault();
+      let message = messages[localStorage.getItem('lang')];
+      if(this.handleValidation(true)){
+        //code for send email
+        let successMessage = message['FormSubmit.success'];
+        axios({
+          method: 'post',
+          url: 'sitio/mail/contact_me.php',
+          data: {
+            name: this.state.fields["name"],
+            phone: this.state.fields["phone"],
+            email: this.state.fields["email"],
+            message: this.state.fields["message"]
+          },
+          headers: {
+            'content-type': 'application/json',
+          },
+        })
+        .then(res => {
+          Swal.fire(message["FormSubmit.success.title"], successMessage, 'success');
+        }).catch(function (error) {
+          console.log(error);
+          Swal.fire('Oops...', errorMessage, 'error')
+        });
+      }else{
+        let errorMessage = message['FormSubmit.error'];
+        Swal.fire('Oops...', errorMessage, 'error')
+      }
+
+  }
+
+  handleChange(field, e){      
+      let fields = this.state.fields;
+      fields[field] = e.target.value;
+      this.handleValidation(false);
+      this.setState({fields});
   }
   render() {
-    const { classes } = this.props;
+    const { classes} = this.props;
+    // const { intl } = this.props;
     return (
       <div id="contact">
         <div className={classes.bigMap}>
@@ -164,44 +270,59 @@ class ContactUsPage extends React.Component {
                     <br />
                     <br />
                   </p>
-                  <form>
+                  <form onSubmit={this.contactSubmit.bind(this)}>
                     <CustomInput
                       labelText={<FormattedMessage id= "ContactMe.form.name" defaultMessage="Your Name" />}
-                      id="float"
+                      id="name"
                       formControlProps={{
                         fullWidth: true
                       }}
+                      inputProps={{
+                        onChange: this.handleChange.bind(this, 'name'),
+                      }}
+                      error= {this.state.errors["name"]}
                     />
                     <CustomInput
                       labelText={<FormattedMessage id= "ContactMe.form.email" defaultMessage="Email address" />}
-                      id="float"
+                      id="email"
                       formControlProps={{
                         fullWidth: true
                       }}
+                      inputProps={{
+                          type: "text",
+                          onChange: this.handleChange.bind(this, 'email'),                          
+                      }}
+                      error= {this.state.errors["email"]}
+                      // errorText= "holi"
                     />
                     <CustomInput
                       labelText={<FormattedMessage id= "ContactMe.form.phone" defaultMessage="Phone" />}
-                      id="float"
+                      id="phone"
                       formControlProps={{
                         fullWidth: true
                       }}
+                      inputProps={{
+                        onChange: this.handleChange.bind(this, 'phone'),
+                      }}
+                      error= {this.state.errors["phone"]}
                     />
                     <CustomInput
                       labelText={<FormattedMessage id= "ContactMe.form.message" defaultMessage="Your Message" />}
-                      id="float"
+                      id="message"
                       formControlProps={{
                         fullWidth: true
                       }}
                       inputProps={{
                         multiline: true,
-                        rows: 6
+                        rows: 6,
+                        onChange: this.handleChange.bind(this, 'message'),
                       }}
                     />
                     <div className={classes.textCenter}>
-                      <Button color="primary" round disabled>
+                      <Button type="submit" color="primary" round>
                       <FormattedMessage id= "ContactMe.button" defaultMessage="Contact Me" />
                       </Button>
-                      <SnackbarContent
+                      {/* <SnackbarContent
                         message={
                           <span>
                             <b><FormattedMessage id= "ContactMe.warning.title" defaultMessage="WARNING ALERT" /></b>
@@ -210,7 +331,7 @@ class ContactUsPage extends React.Component {
                         }
                         color="warning"
                         icon={Warning}
-                      />
+                      /> */}
                     </div>
                   </form>
                 </GridItem>
