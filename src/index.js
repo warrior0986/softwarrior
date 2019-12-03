@@ -42,6 +42,8 @@ import PresentationPage from "views/PresentationPage/PresentationPage.jsx";
 // import SignupPage from "views/SignupPage/SignupPage.jsx";
 // import ErrorPage from "views/ErrorPage/ErrorPage.jsx";
 
+import * as serviceWorker from './serviceWorker';
+
 var hist = createBrowserHistory();
 
 ReactDOM.render(
@@ -67,3 +69,5 @@ ReactDOM.render(
   </Router>,
   document.getElementById("root")
 );
+
+serviceWorker.register();
